@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">NewsPulse</string>
+    <string name="hint_search_article">"Search Article"</string>
+    <string name="go_offline">Go Offline</string>
+    <string name="error_message">Error message</string>
+    <string name="retry">Retry</string>
+    <string name="news_image">News Image</string>
+    <string name="title">title</string>
+    <string name="description">description</string>
+</resources>
