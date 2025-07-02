@@ -77,6 +77,13 @@ NewsPulse follows the **MVVM (Model–View–ViewModel)** architecture to ensure
 - Ensures that if any field (like title, description, etc.) is `null`, the app substitutes a safe default or skips processing.
   
 ---
+## 🎬 App Demo
+
+Click below to view the demo videos of the NewsPulse app in action:
+
+- ▶️ [Demo 1 – App Launch & News Feed](./show_news_list.mp4)
+- ▶️ [Demo 2 – Detailed Articles & open article in browser](./show_news_description.mp4)
+- ▶️ [Demo 2 – Saved Articles](./show_saved_articles.mp4)
 
 ## 🏗️ Setup Instructions
 
