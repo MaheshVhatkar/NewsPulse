@@ -27,21 +27,55 @@
 - ⚡ **Shimmer Loading Animation**  
   Beautiful placeholder animation while data is loading.
 
+## 🧠 Architecture & Design Choices
+
+NewsPulse follows the **MVVM (Model–View–ViewModel)** architecture to ensure a clear separation of concerns, better testability, and a responsive UI.
+
+### 🏛 MVVM Architecture
+- **Model**: Represents the data layer, including data classes and Room database entities.
+- **ViewModel**: Acts as a bridge between the UI and data sources. Holds UI-related logic and exposes `LiveData` to the UI.
+- **View (Activity/Fragment)**: Observes the `ViewModel`, renders UI, and handles user interaction.
+
+> This architecture allows the UI to remain reactive and lifecycle-aware while keeping logic testable and loosely coupled.
+
 ---
 
-## 🚀 Tech Stack
+### 🧩 Why These Libraries & Tools?
 
-- **Kotlin**
-- **MVVM Architecture**
-- **Room Database** – for offline data storage
-- **Retrofit** – for API integration
-- **LiveData & ViewModel** – lifecycle-aware data management
-- **Glide** – for image loading
-- **Material Components** – for clean UI elements
-- **SwipeRefreshLayout**
-- **Shimmer** – for loading animations
-- **DataBinding**
+| Tool / Component        | Reason for Use                                                                 |
+|-------------------------|--------------------------------------------------------------------------------|
+| **ViewModel**           | Stores UI-related data that survives configuration changes (e.g., rotation).  |
+| **LiveData**            | Observes changes in data and updates the UI automatically.                    |
+| **DataBinding**         | Binds UI components in layouts directly to data sources in the ViewModel.     |
+| **Room DB**             | Provides a local SQLite abstraction to store favorite/offline articles.       |
+| **Retrofit**            | Simplifies network requests and parsing API responses.                        |
+| **Glide**               | Efficient image loading and caching.                                          |
+| **Material Components** | For modern, consistent UI design that aligns with Material Design guidelines. |
+| **SwipeRefreshLayout**  | Adds pull-to-refresh gesture easily.                                          |
+| **Shimmer Effect**      | Provides a better user experience while content is loading.                   |
 
+---
+
+### 🧵 Threading & Performance
+
+- Used **Kotlin Coroutines** for asynchronous tasks (network and DB operations).
+- All long-running operations run on the **IO Dispatcher** to avoid blocking the main thread.
+
+---
+
+### 🔐 Clean Code Principles
+
+- Separated concerns into layers: API calls, database access, and UI.
+- Used **constants** in a centralized `ConstantValues` object for reusability.
+- Followed naming conventions and modularization for better maintainability.
+
+---
+
+### ✅ Null-Safety with Kotlin
+
+- Used **Elvis operator (`?:`)** extensively to handle nullable values.
+- Ensures that if any field (like title, description, etc.) is `null`, the app substitutes a safe default or skips processing.
+  
 ---
 
 ## 🏗️ Setup Instructions
