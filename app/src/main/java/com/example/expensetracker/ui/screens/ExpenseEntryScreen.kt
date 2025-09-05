@@ -45,7 +45,11 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpenseEntryScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(factory = ExpenseViewModelFactory((LocalContext.current.applicationContext as SmartExpenseApp).repository))) {
+fun ExpenseEntryScreen(
+	padding: PaddingValues,
+	vm: ExpenseViewModel = viewModel(factory = ExpenseViewModelFactory((LocalContext.current.applicationContext as SmartExpenseApp).repository)),
+	onAdded: () -> Unit = {}
+) {
 	val context = LocalContext.current
 	val form = vm.form.collectAsState().value
 	val todayTotal = vm.totalSpentOn(LocalDate.now())
@@ -118,6 +122,7 @@ fun ExpenseEntryScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(
 		Button(onClick = {
 			vm.addExpense {
 				Toast.makeText(context, "Expense added", Toast.LENGTH_SHORT).show()
+				onAdded()
 			}
 		}, modifier = Modifier.fillMaxWidth()) {
 			Text("Submit")
@@ -128,11 +133,6 @@ fun ExpenseEntryScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(
 		}
 	}
 
-	LaunchedEffect(form.addedAnimationTick) {
-		if (form.addedAnimationTick > 0) {
-			// simple visual cue: toast on animation tick (mock animation)
-			Toast.makeText(context, "Added!", Toast.LENGTH_SHORT).show()
-		}
-	}
+	// Removed spurious toast on open
 }
 

@@ -83,5 +83,9 @@ class ExpenseViewModel(
 			onSuccess()
 		}
 	}
+
+	fun removeExpense(id: String) {
+		viewModelScope.launch { repository.remove(id) }
+	}
 }
 

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -22,6 +23,7 @@ import com.example.expensetracker.ui.vm.ExpenseViewModelFactory
 import com.example.expensetracker.data.ExpenseCategory
 import com.example.expensetracker.ui.vm.ExpenseViewModel
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(factory = ExpenseViewModelFactory((androidx.compose.ui.platform.LocalContext.current.applicationContext as SmartExpenseApp).repository))) {
@@ -37,7 +39,7 @@ fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel
 
 	Column(Modifier.padding(padding).padding(16.dp)) {
 		Text("Last 7 Days Totals")
-		BarChart(values = totalsByDay.values.toList())
+		AxisBarChart(labels = last7.map { it.format(DateTimeFormatter.ofPattern("MM-dd")) }, values = totalsByDay.values.toList())
 		Text("Category Totals")
 		BarChart(values = totalsByCategory.values.toList(), barColor = Color(0xFF4CAF50))
 		Button(onClick = {
@@ -67,6 +69,34 @@ private fun BarChart(values: List<Double>, barColor: Color = Color(0xFF2196F3)) 
 				size = androidx.compose.ui.geometry.Size(width = barWidth, height = height)
 			)
 		}
+	}
+}
+
+@Composable
+private fun AxisBarChart(labels: List<String>, values: List<Double>, barColor: Color = Color(0xFF2196F3)) {
+	val max = (values.maxOrNull() ?: 1.0).coerceAtLeast(1.0)
+	Canvas(Modifier.fillMaxWidth().height(160.dp)) {
+		val leftPadding = 48f
+		val bottomPadding = 24f
+		val chartWidth = size.width - leftPadding
+		val chartHeight = size.height - bottomPadding
+		// y-axis
+		drawLine(Color.Gray, start = androidx.compose.ui.geometry.Offset(leftPadding, 0f), end = androidx.compose.ui.geometry.Offset(leftPadding, chartHeight))
+		// x-axis
+		drawLine(Color.Gray, start = androidx.compose.ui.geometry.Offset(leftPadding, chartHeight), end = androidx.compose.ui.geometry.Offset(size.width, chartHeight))
+		val barWidth = chartWidth / (values.size * 2f)
+		values.forEachIndexed { index, v ->
+			val height = (v / max).toFloat() * (chartHeight - 4f)
+			val x = leftPadding + (index * 2 + 1) * barWidth
+			drawRect(
+				color = barColor,
+				topLeft = androidx.compose.ui.geometry.Offset(x = x, y = chartHeight - height),
+				size = androidx.compose.ui.geometry.Size(width = barWidth, height = height)
+			)
+		}
+	}
+	Row(Modifier.fillMaxWidth().padding(horizontal = 48.dp, vertical = 4.dp), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween) {
+		labels.forEach { lbl -> Text(lbl) }
 	}
 }
 

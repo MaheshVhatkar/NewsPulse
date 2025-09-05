@@ -1,19 +1,26 @@
 package com.example.expensetracker.ui.screens
 
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensetracker.SmartExpenseApp
@@ -35,6 +43,7 @@ import java.time.LocalDate
 fun ExpenseListScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(factory = ExpenseViewModelFactory((androidx.compose.ui.platform.LocalContext.current.applicationContext as SmartExpenseApp).repository))) {
 	var date by remember { mutableStateOf(LocalDate.now()) }
 	var groupByCategory by remember { mutableStateOf(true) }
+	var pendingDelete by remember { mutableStateOf<Expense?>(null) }
 
 	val expenses = vm.expenses.collectAsState().value.filter { it.localDate() == date }
 
@@ -71,21 +80,59 @@ fun ExpenseListScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(f
 				val groups = expenses.groupBy { it.category }
 				LazyColumn(contentPadding = padding) {
 					groups.forEach { (cat, list) ->
-						item { Text(cat.name) }
-						items(list) { ExpenseRow(it) }
+						item { Text(cat.name, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) }
+						items(list) { ExpenseCard(it) { pendingDelete = it } }
 					}
 				}
 			} else {
 				LazyColumn(contentPadding = padding) {
-					items(expenses.sortedBy { it.epochMillis }) { ExpenseRow(it) }
+					items(expenses.sortedBy { it.epochMillis }) { ExpenseCard(it) { pendingDelete = it } }
 				}
 			}
+		}
+
+		if (pendingDelete != null) {
+			AlertDialog(
+				onDismissRequest = { pendingDelete = null },
+				title = { Text("Remove expense?") },
+				text = { Text(pendingDelete!!.title) },
+				confirmButton = {
+					TextButton(onClick = {
+						vm.removeExpense(pendingDelete!!.id)
+						pendingDelete = null
+					}) { Text("Remove") }
+				},
+				dismissButton = { TextButton(onClick = { pendingDelete = null }) { Text("Cancel") } }
+			)
 		}
 	}
 }
 
 @Composable
-private fun ExpenseRow(expense: Expense) {
-	Text("${expense.title} - ₹${"%.2f".format(expense.amountInRupees)} - ${expense.category}")
+private fun ExpenseCard(expense: Expense, onLongPressDelete: (Expense) -> Unit) {
+	Card(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(horizontal = 16.dp, vertical = 8.dp)
+			.combinedClickable(
+				onClick = {},
+				onLongClick = { onLongPressDelete(expense) }
+			),
+		colors = CardDefaults.cardColors()
+	) {
+		Column(Modifier.padding(16.dp)) {
+			Row(Modifier.fillMaxWidth()) {
+				Text(expense.title, fontWeight = FontWeight.SemiBold)
+				Spacer(Modifier.weight(1f))
+				Text("₹${"%.2f".format(expense.amountInRupees)}")
+			}
+			Spacer(Modifier.height(4.dp))
+			Text("${expense.category}")
+			if (!expense.notes.isNullOrBlank()) {
+				Spacer(Modifier.height(4.dp))
+				Text(expense.notes!!)
+			}
+		}
+	}
 }
 

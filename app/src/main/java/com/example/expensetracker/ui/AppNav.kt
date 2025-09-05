@@ -68,7 +68,7 @@ fun AppNav(dark: Boolean, onToggleDark: () -> Unit) {
 			navController = navController,
 			startDestination = BottomNavItems.Entry.route
 		) {
-			composable(BottomNavItems.Entry.route) { ExpenseEntryScreen(padding) }
+			composable(BottomNavItems.Entry.route) { ExpenseEntryScreen(padding) { navController.navigate(BottomNavItems.List.route) } }
 			composable(BottomNavItems.List.route) { ExpenseListScreen(padding) }
 			composable(BottomNavItems.Report.route) { ExpenseReportScreen(padding) }
 		}
