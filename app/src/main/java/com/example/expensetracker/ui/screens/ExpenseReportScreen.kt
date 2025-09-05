@@ -39,7 +39,8 @@ fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel
 
 	Column(Modifier.padding(padding).padding(16.dp)) {
 		Text("Last 7 Days (Bar)")
-		AxisBarChart(labels = last7.map { it.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) }, values = totalsByDay.values.toList())
+		Text("Totals by Category")
+		AxisBarChart(labels = com.example.expensetracker.data.ExpenseCategory.entries.map { it.name }, values = com.example.expensetracker.data.ExpenseCategory.entries.map { cat -> all.filter { it.category == cat }.sumOf { it.amountInRupees } })
 		Button(onClick = {
 			val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 			val csv = buildString {
