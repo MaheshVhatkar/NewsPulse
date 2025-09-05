@@ -19,8 +19,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,8 +37,6 @@ import com.example.expensetracker.data.Expense
 import com.example.expensetracker.data.ExpenseCategory
 import com.example.expensetracker.ui.vm.ExpenseViewModel
 import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,15 +65,14 @@ fun ExpenseListScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(f
 				label = { Text("Next Day") },
 				colors = AssistChipDefaults.assistChipColors()
 			)
-			Spacer(Modifier.height(4.dp))
-			TabRow(selectedTabIndex = if (groupByCategory) 0 else 1) {
-				Tab(selected = groupByCategory, onClick = { groupByCategory = true }, text = { Text("By Category") })
-				Tab(selected = !groupByCategory, onClick = { groupByCategory = false }, text = { Text("By Time") })
-			}
-			Spacer(Modifier.height(4.dp))
+			Spacer(Modifier.height(8.dp))
+			FilterChip(selected = groupByCategory, onClick = { groupByCategory = !groupByCategory }, label = {
+				Text(if (groupByCategory) "Group: Category" else "Group: Time")
+			})
+			Spacer(Modifier.height(8.dp))
 			Text("Total: count=${expenses.size}, amount=₹%.2f".format(expenses.sumOf { it.amountInRupees }))
 		}
-		Spacer(Modifier.height(4.dp))
+		Spacer(Modifier.height(12.dp))
 		if (expenses.isEmpty()) {
 			Text("No expenses for this date")
 		} else {
@@ -132,9 +127,7 @@ private fun ExpenseCard(expense: Expense, onLongPressDelete: (Expense) -> Unit) 
 				Text("₹${"%.2f".format(expense.amountInRupees)}")
 			}
 			Spacer(Modifier.height(4.dp))
-			val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
-			val dateTime = java.time.Instant.ofEpochMilli(expense.epochMillis).atZone(ZoneId.systemDefault()).toLocalDateTime()
-			Text("${expense.category} • ${dateTime.format(formatter)}")
+			Text("${expense.category}")
 			if (!expense.notes.isNullOrBlank()) {
 				Spacer(Modifier.height(4.dp))
 				Text(expense.notes!!)
