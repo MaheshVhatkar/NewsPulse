@@ -1,16 +1,19 @@
 package com.example.expensetracker.data
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import java.time.LocalDate
 
 interface ExpenseRepository {
-	val expenses: StateFlow<List<Expense>>
+	val expenses: Flow<List<Expense>>
 	suspend fun add(expense: Expense)
 	suspend fun remove(id: String)
-	fun totalsByDate(lastDays: Long = 7): StateFlow<Map<LocalDate, Double>>
-	fun totalsByCategory(lastDays: Long = 7): StateFlow<Map<ExpenseCategory, Double>>
+	fun totalsByDate(lastDays: Long = 7): Flow<Map<LocalDate, Double>>
+	fun totalsByCategory(lastDays: Long = 7): Flow<Map<ExpenseCategory, Double>>
 }
 
 class InMemoryExpenseRepository : ExpenseRepository {

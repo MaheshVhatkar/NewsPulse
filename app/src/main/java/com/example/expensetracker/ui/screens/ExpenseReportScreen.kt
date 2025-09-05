@@ -17,12 +17,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensetracker.SmartExpenseApp
+import com.example.expensetracker.ui.vm.ExpenseViewModelFactory
 import com.example.expensetracker.data.ExpenseCategory
 import com.example.expensetracker.ui.vm.ExpenseViewModel
 import java.time.LocalDate
 
 @Composable
-fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel()) {
+fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(factory = ExpenseViewModelFactory((androidx.compose.ui.platform.LocalContext.current.applicationContext as SmartExpenseApp).repository))) {
 	val context = LocalContext.current
 	val all = vm.expenses.collectAsState().value
 	val last7 = (0..6).map { LocalDate.now().minusDays((6 - it).toLong()) }

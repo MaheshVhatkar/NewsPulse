@@ -23,6 +23,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensetracker.SmartExpenseApp
+import com.example.expensetracker.ui.vm.ExpenseViewModelFactory
 import com.example.expensetracker.data.Expense
 import com.example.expensetracker.data.ExpenseCategory
 import com.example.expensetracker.ui.vm.ExpenseViewModel
@@ -30,7 +32,7 @@ import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpenseListScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel()) {
+fun ExpenseListScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(factory = ExpenseViewModelFactory((androidx.compose.ui.platform.LocalContext.current.applicationContext as SmartExpenseApp).repository))) {
 	var date by remember { mutableStateOf(LocalDate.now()) }
 	var groupByCategory by remember { mutableStateOf(true) }
 

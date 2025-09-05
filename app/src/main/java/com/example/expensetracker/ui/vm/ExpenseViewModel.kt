@@ -7,8 +7,10 @@ import com.example.expensetracker.data.ExpenseCategory
 import com.example.expensetracker.data.ExpenseRepository
 import com.example.expensetracker.data.InMemoryExpenseRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -23,13 +25,17 @@ data class FormState(
 )
 
 class ExpenseViewModel(
-	private val repository: ExpenseRepository = InMemoryExpenseRepository()
+	private val repository: ExpenseRepository
 ) : ViewModel() {
 
 	private val _form = MutableStateFlow(FormState())
 	val form: StateFlow<FormState> = _form.asStateFlow()
 
-	val expenses = repository.expenses
+	val expenses = repository.expenses.stateIn(
+		scope = viewModelScope,
+		started = SharingStarted.Eagerly,
+		initialValue = emptyList()
+	)
 
 	fun onTitleChange(v: String) { _form.value = _form.value.copy(title = v) }
 	fun onAmountChange(v: String) { _form.value = _form.value.copy(amount = v) }

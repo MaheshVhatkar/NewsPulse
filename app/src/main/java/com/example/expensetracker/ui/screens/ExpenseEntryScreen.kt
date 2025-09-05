@@ -1,5 +1,7 @@
 package com.example.expensetracker.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -32,17 +34,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensetracker.SmartExpenseApp
 import com.example.expensetracker.data.ExpenseCategory
 import com.example.expensetracker.ui.vm.ExpenseViewModel
+import com.example.expensetracker.ui.vm.ExpenseViewModelFactory
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpenseEntryScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel()) {
+fun ExpenseEntryScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(factory = ExpenseViewModelFactory((LocalContext.current.applicationContext as SmartExpenseApp).repository))) {
 	val context = LocalContext.current
 	val form = vm.form.collectAsState().value
 	val todayTotal = vm.totalSpentOn(LocalDate.now())
+
+	val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
+		if (uri != null) {
+			try {
+				context.contentResolver.takePersistableUriPermission(
+					uri,
+					Intent.FLAG_GRANT_READ_URI_PERMISSION
+				)
+			} catch (_: SecurityException) {}
+			vm.onReceiptChange(uri.toString())
+		}
+	}
 
 	Column(
 		modifier = Modifier
@@ -92,8 +110,8 @@ fun ExpenseEntryScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(
 		)
 		Spacer(Modifier.height(12.dp))
 		Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-			TextButton(onClick = { vm.onReceiptChange("mock://receipt.jpg") }) {
-				Text(if (form.receiptUri == null) "Attach Receipt (mock)" else "Receipt Attached")
+			TextButton(onClick = { imagePicker.launch(arrayOf("image/*")) }) {
+				Text(if (form.receiptUri == null) "Attach Receipt" else "Receipt Attached")
 			}
 		}
 		Spacer(Modifier.height(16.dp))
