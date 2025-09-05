@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensetracker.SmartExpenseApp
 import com.example.expensetracker.ui.vm.ExpenseViewModelFactory
@@ -39,7 +40,7 @@ fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel
 
 	Column(Modifier.padding(padding).padding(16.dp)) {
 		Text("Last 7 Days Totals")
-		AxisBarChart(labels = last7.map { it.format(DateTimeFormatter.ofPattern("MM-dd")) }, values = totalsByDay.values.toList())
+		AxisBarChart(labels = last7.map { it.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) }, values = totalsByDay.values.toList())
 		Text("Category Totals")
 		BarChart(values = totalsByCategory.values.toList(), barColor = Color(0xFF4CAF50))
 		Button(onClick = {
@@ -75,15 +76,34 @@ private fun BarChart(values: List<Double>, barColor: Color = Color(0xFF2196F3)) 
 @Composable
 private fun AxisBarChart(labels: List<String>, values: List<Double>, barColor: Color = Color(0xFF2196F3)) {
 	val max = (values.maxOrNull() ?: 1.0).coerceAtLeast(1.0)
-	Canvas(Modifier.fillMaxWidth().height(160.dp)) {
-		val leftPadding = 48f
-		val bottomPadding = 24f
+	Canvas(Modifier.fillMaxWidth().height(200.dp)) {
+		val leftPadding = 56f
+		val bottomPadding = 36f
 		val chartWidth = size.width - leftPadding
 		val chartHeight = size.height - bottomPadding
-		// y-axis
+		// axes
 		drawLine(Color.Gray, start = androidx.compose.ui.geometry.Offset(leftPadding, 0f), end = androidx.compose.ui.geometry.Offset(leftPadding, chartHeight))
-		// x-axis
 		drawLine(Color.Gray, start = androidx.compose.ui.geometry.Offset(leftPadding, chartHeight), end = androidx.compose.ui.geometry.Offset(size.width, chartHeight))
+
+		// y-axis ticks and labels (smaller font)
+		val tickCount = 5
+		val textPaint = android.graphics.Paint().apply {
+			color = android.graphics.Color.DKGRAY
+			textSize = 20f
+			textAlign = android.graphics.Paint.Align.RIGHT
+			isAntiAlias = true
+		}
+		for (i in 0..tickCount) {
+			val fraction = i / tickCount.toFloat()
+			val y = chartHeight - fraction * (chartHeight - 4f)
+			// grid line
+			drawLine(Color.LightGray, start = androidx.compose.ui.geometry.Offset(leftPadding - 4f, y), end = androidx.compose.ui.geometry.Offset(size.width, y), alpha = 0.3f)
+			// label
+			val valueAtTick = max * fraction
+			drawContext.canvas.nativeCanvas.drawText(String.format("%.0f", valueAtTick), leftPadding - 8f, y + 6f, textPaint)
+		}
+
+		// bars
 		val barWidth = chartWidth / (values.size * 2f)
 		values.forEachIndexed { index, v ->
 			val height = (v / max).toFloat() * (chartHeight - 4f)
@@ -95,8 +115,8 @@ private fun AxisBarChart(labels: List<String>, values: List<Double>, barColor: C
 			)
 		}
 	}
-	Row(Modifier.fillMaxWidth().padding(horizontal = 48.dp, vertical = 4.dp), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween) {
-		labels.forEach { lbl -> Text(lbl) }
+	Row(Modifier.fillMaxWidth().padding(horizontal = 56.dp, vertical = 4.dp), horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween) {
+		labels.forEach { lbl -> Text(lbl, fontSize = 10.sp) }
 	}
 }
 
