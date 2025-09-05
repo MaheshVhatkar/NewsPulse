@@ -21,10 +21,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensetracker.SmartExpenseApp
 import com.example.expensetracker.ui.vm.ExpenseViewModelFactory
-import com.example.expensetracker.data.ExpenseCategory
 import com.example.expensetracker.ui.vm.ExpenseViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.io.File
+import androidx.core.content.FileProvider
 
 @Composable
 fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(factory = ExpenseViewModelFactory((androidx.compose.ui.platform.LocalContext.current.applicationContext as SmartExpenseApp).repository))) {
@@ -34,26 +35,30 @@ fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel
 	val totalsByDay = last7.associateWith { date ->
 		all.filter { it.localDate() == date }.sumOf { it.amountInRupees }
 	}
-	val totalsByCategory = ExpenseCategory.entries.associateWith { cat ->
-		all.filter { it.category == cat }.sumOf { it.amountInRupees }
-	}
+	// Single chart: aggregate totals by date for the last 7 days
 
 	Column(Modifier.padding(padding).padding(16.dp)) {
-		Text("Last 7 Days Totals")
+		Text("Last 7 Days (Bar)")
 		AxisBarChart(labels = last7.map { it.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) }, values = totalsByDay.values.toList())
-		Text("Category Totals")
-		BarChart(values = totalsByCategory.values.toList(), barColor = Color(0xFF4CAF50))
 		Button(onClick = {
+			val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 			val csv = buildString {
-				appendLine("Date,Total")
-				last7.forEach { d -> appendLine("$d,${totalsByDay[d] ?: 0.0}") }
+				appendLine("amount,date,category")
+				all.forEach { e ->
+					appendLine("${e.amountInRupees},${e.localDate().format(formatter)},${e.category}")
+				}
 			}
+			val dir = File(context.cacheDir, "exports").apply { mkdirs() }
+			val file = File(dir, "expenses.csv")
+			file.writeText(csv)
+			val uri = FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
 			val intent = Intent(Intent.ACTION_SEND).apply {
 				type = "text/csv"
-				putExtra(Intent.EXTRA_TEXT, csv)
+				putExtra(Intent.EXTRA_STREAM, uri)
+				addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 			}
 			context.startActivity(Intent.createChooser(intent, "Export CSV"))
-		}) { Text("Export CSV (mock)") }
+		}) { Text("Export CSV") }
 	}
 }
 
