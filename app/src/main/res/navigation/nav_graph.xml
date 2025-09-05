@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/nav_graph"
+	app:startDestination="@id/entryFragment">
+
+	<fragment
+		android:id="@+id/entryFragment"
+		android:name="com.example.smartexpensetracker.ui.entry.EntryFragment"
+		android:label="@string/nav_entry" />
+
+	<fragment
+		android:id="@+id/listFragment"
+		android:name="com.example.smartexpensetracker.ui.list.ListFragment"
+		android:label="@string/nav_list" />
+
+	<fragment
+		android:id="@+id/reportFragment"
+		android:name="com.example.smartexpensetracker.ui.report.ReportFragment"
+		android:label="@string/nav_report" />
+
+</navigation>
