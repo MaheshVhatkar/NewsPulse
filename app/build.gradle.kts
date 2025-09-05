@@ -1,6 +1,7 @@
 plugins {
 	id("com.android.application") version "8.5.2"
 	id("org.jetbrains.kotlin.android") version "1.9.24"
+	id("com.google.devtools.ksp") version "1.9.24-1.0.20"
 }
 
 android {
@@ -45,6 +46,12 @@ android {
 	}
 }
 
+ksp {
+	arg("room.schemaLocation", "$projectDir/schemas")
+	arg("room.incremental", "true")
+	arg("room.generateKotlin", "true")
+}
+
 dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
 
@@ -78,6 +85,13 @@ dependencies {
 	implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
 	implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
 	implementation("androidx.navigation:navigation-compose:2.8.2")
+
+	// Room
+	implementation("androidx.room:room-runtime:2.6.1")
+	implementation("androidx.room:room-ktx:2.6.1")
+	ksp("androidx.room:room-compiler:2.6.1")
+	// Optional: Paging support
+	// implementation("androidx.room:room-paging:2.6.1")
 
 	// Compose tooling & tests
 	debugImplementation("androidx.compose.ui:ui-tooling")
