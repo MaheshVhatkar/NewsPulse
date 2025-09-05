@@ -1,8 +1,8 @@
 pluginManagement {
 	repositories {
-		gradlePluginPortal()
 		google()
 		mavenCentral()
+		gradlePluginPortal()
 	}
 }
 
@@ -14,6 +14,6 @@ dependencyResolutionManagement {
 	}
 }
 
-rootProject.name = "SmartDailyExpenseTracker"
+rootProject.name = "SmartExpenseTracker"
 include(":app")
 

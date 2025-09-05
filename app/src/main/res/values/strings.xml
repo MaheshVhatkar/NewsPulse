@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string name="app_name">Smart Expense Tracker</string>
+	<string name="nav_entry">Entry</string>
+	<string name="nav_list">List</string>
+	<string name="nav_report">Report</string>
+	<string name="added_success">Expense added</string>
+	<string name="today_total_format">Total: ₹%.2f</string>
 </resources>
 

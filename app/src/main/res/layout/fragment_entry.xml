@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<LinearLayout
+		android:id="@+id/container_entry"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:padding="16dp">
+
+		<TextView
+			android:id="@+id/text_today_total"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textStyle="bold"
+			android:textSize="18sp"
+			android:text="Total: ₹0"
+			tools:text="Total: ₹540.00" />
+
+		<EditText
+			android:id="@+id/input_title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:hint="Title"/>
+
+		<EditText
+			android:id="@+id/input_amount"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="numberDecimal"
+			android:hint="Amount (₹)"/>
+
+		<Spinner
+			android:id="@+id/spinner_category"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content" />
+
+		<EditText
+			android:id="@+id/input_notes"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:hint="Notes (optional)"
+			android:maxLength="100"/>
+
+		<Button
+			android:id="@+id/button_submit"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="Add Expense"/>
+
+	</LinearLayout>
+</ScrollView>
