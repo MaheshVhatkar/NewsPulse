@@ -48,6 +48,9 @@ interface ExpenseDao {
 	@Query("SELECT * FROM expenses ORDER BY epochMillis DESC")
 	fun observeAll(): Flow<List<ExpenseEntity>>
 
+	@Query("SELECT COUNT(*) FROM expenses")
+	suspend fun count(): Long
+
 	@Insert(onConflict = OnConflictStrategy.REPLACE)
 	suspend fun upsert(entity: ExpenseEntity)
 
