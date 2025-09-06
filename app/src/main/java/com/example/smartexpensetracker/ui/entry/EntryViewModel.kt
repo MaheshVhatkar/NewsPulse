@@ -16,6 +16,10 @@ class EntryViewModel(private val repository: ExpenseRepository) : ViewModel() {
 	private val _todayTotal = MutableStateFlow(0.0)
 	val todayTotal: StateFlow<Double> = _todayTotal.asStateFlow()
 
+	init {
+		refreshTodayTotal()
+	}
+
 	fun refreshTodayTotal() {
 		val total = repository.getExpensesForDate(LocalDate.now()).sumOf { it.amountInRupees }
 		_todayTotal.value = total

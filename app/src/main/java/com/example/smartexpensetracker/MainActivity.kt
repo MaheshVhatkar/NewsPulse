@@ -13,6 +13,7 @@ class MainActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		ServiceLocator.init(applicationContext)
+		ServiceLocator.preloadBlocking()
 		binding = ActivityMainBinding.inflate(layoutInflater)
 		setContentView(binding.root)
 
