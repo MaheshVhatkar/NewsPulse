@@ -14,14 +14,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensetracker.SmartExpenseApp
 import com.example.expensetracker.ui.vm.ExpenseViewModelFactory
-import com.example.expensetracker.data.ExpenseCategory
 import com.example.expensetracker.ui.vm.ExpenseViewModel
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(factory = ExpenseViewModelFactory((androidx.compose.ui.platform.LocalContext.current.applicationContext as SmartExpenseApp).repository))) {
@@ -31,15 +35,10 @@ fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel
 	val totalsByDay = last7.associateWith { date ->
 		all.filter { it.localDate() == date }.sumOf { it.amountInRupees }
 	}
-	val totalsByCategory = ExpenseCategory.entries.associateWith { cat ->
-		all.filter { it.category == cat }.sumOf { it.amountInRupees }
-	}
 
 	Column(Modifier.padding(padding).padding(16.dp)) {
-		Text("Last 7 Days Totals")
-		BarChart(values = totalsByDay.values.toList())
-		Text("Category Totals")
-		BarChart(values = totalsByCategory.values.toList(), barColor = Color(0xFF4CAF50))
+		Text("Spending (Last 7 Days)")
+		DateAmountGraph(dates = last7, amounts = last7.map { totalsByDay[it] ?: 0.0 })
 		Button(onClick = {
 			val csv = buildString {
 				appendLine("Date,Total")
@@ -55,17 +54,62 @@ fun ExpenseReportScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel
 }
 
 @Composable
-private fun BarChart(values: List<Double>, barColor: Color = Color(0xFF2196F3)) {
-	val max = (values.maxOrNull() ?: 1.0).coerceAtLeast(1.0)
-	Canvas(Modifier.fillMaxWidth().height(120.dp)) {
-		val barWidth = size.width / (values.size * 2f)
-		values.forEachIndexed { index, v ->
-			val height = (v / max).toFloat() * size.height
-			drawRect(
-				color = barColor,
-				topLeft = androidx.compose.ui.geometry.Offset(x = (index * 2 + 1) * barWidth, y = size.height - height),
-				size = androidx.compose.ui.geometry.Size(width = barWidth, height = height)
-			)
+private fun DateAmountGraph(dates: List<LocalDate>, amounts: List<Double>) {
+	val max = (amounts.maxOrNull() ?: 1.0).coerceAtLeast(1.0)
+	val min = 0.0
+	val formatter = DateTimeFormatter.ofPattern("dd/MM")
+
+	Canvas(Modifier.fillMaxWidth().height(220.dp)) {
+		val leftPadding = 40f
+		val bottomPadding = 30f
+		val topPadding = 10f
+		val rightPadding = 10f
+
+		val width = size.width - leftPadding - rightPadding
+		val height = size.height - topPadding - bottomPadding
+
+		// Axes
+		drawLine(Color.Gray, start = androidx.compose.ui.geometry.Offset(leftPadding, topPadding), end = androidx.compose.ui.geometry.Offset(leftPadding, topPadding + height))
+		drawLine(Color.Gray, start = androidx.compose.ui.geometry.Offset(leftPadding, topPadding + height), end = androidx.compose.ui.geometry.Offset(leftPadding + width, topPadding + height))
+
+		// Y-axis ticks (0, 50%, 100%)
+		for (i in 0..2) {
+			val y = topPadding + height - (i / 2f) * height
+			drawLine(Color.LightGray, start = androidx.compose.ui.geometry.Offset(leftPadding, y), end = androidx.compose.ui.geometry.Offset(leftPadding + width, y))
+		}
+
+		// Plot line
+		val stepX = if (amounts.size > 1) width / (amounts.size - 1) else 0f
+		val path = Path()
+		amounts.forEachIndexed { index, value ->
+			val x = leftPadding + index * stepX
+			val y = topPadding + height - ((value - min) / (max - min)).toFloat() * height
+			if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+		}
+		drawPath(path = path, color = Color(0xFF2196F3), style = Stroke(width = 4f))
+
+		// Points
+		amounts.forEachIndexed { index, value ->
+			val x = leftPadding + index * stepX
+			val y = topPadding + height - ((value - min) / (max - min)).toFloat() * height
+			drawCircle(color = Color(0xFF1976D2), radius = 6f, center = androidx.compose.ui.geometry.Offset(x, y))
+		}
+
+		// X-axis labels (dates)
+		dates.forEachIndexed { index, date ->
+			val x = leftPadding + index * stepX
+			drawContext.canvas.nativeCanvas.apply {
+				drawText(
+					date.format(formatter),
+					x,
+					topPadding + height + 20f,
+					android.graphics.Paint().apply {
+						textAlign = android.graphics.Paint.Align.CENTER
+						textSize = 28f
+						color = android.graphics.Color.GRAY
+					}
+				)
+			}
 		}
 	}
 }
