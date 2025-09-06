@@ -31,6 +31,11 @@ class BarChartView @JvmOverloads constructor(
 		textAlign = Paint.Align.CENTER
 		textSize = 28f
 	}
+	private val yLabelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+		color = Color.DKGRAY
+		textAlign = Paint.Align.RIGHT
+		textSize = 26f
+	}
 
 	private var dates: List<LocalDate> = emptyList()
 	private var amounts: List<Double> = emptyList()
@@ -46,10 +51,10 @@ class BarChartView @JvmOverloads constructor(
 		super.onDraw(canvas)
 		if (dates.isEmpty() || amounts.isEmpty()) return
 
-		val leftPadding = 60f
+		val leftPadding = 70f
 		val rightPadding = 20f
 		val topPadding = 20f
-		val bottomPadding = 40f
+		val bottomPadding = 44f
 
 		val width = width - leftPadding - rightPadding
 		val height = height - topPadding - bottomPadding
@@ -60,10 +65,13 @@ class BarChartView @JvmOverloads constructor(
 
 		val max = amounts.maxOrNull()?.coerceAtLeast(1.0) ?: 1.0
 
-		// Grid lines 0%, 50%, 100%
+		// Grid lines and Y-axis amount labels (0%, 50%, 100%)
 		for (i in 0..2) {
-			val y = topPadding + height - (i / 2f) * height
+			val fraction = i / 2f
+			val y = topPadding + height - fraction * height
 			canvas.drawLine(leftPadding, y, leftPadding + width, y, gridPaint)
+			val value = max * fraction
+			canvas.drawText("₹" + String.format("%.0f", value), leftPadding - 8f, y + 8f, yLabelPaint)
 		}
 
 		// Bars
@@ -75,8 +83,8 @@ class BarChartView @JvmOverloads constructor(
 			val top = topPadding + height - barHeight
 			canvas.drawRect(left, top, right, topPadding + height, barPaint)
 
-			// X label
-			canvas.drawText(dates[index].format(dateFormatter), (left + right) / 2f, topPadding + height + 28f, labelPaint)
+			// X label (date)
+			canvas.drawText(dates[index].format(dateFormatter), (left + right) / 2f, topPadding + height + 30f, labelPaint)
 		}
 	}
 }
