@@ -69,10 +69,7 @@ class ListFragment : Fragment() {
 				}
 		} else {
 			list.sortedBy { it.dateTime }
-				.groupBy { it.dateTime.toLocalTime().withMinute(0).withSecond(0).toString() }
-				.flatMap { (header, items) ->
-					listOf(ExpenseListItem.Header(header)) + items.map { ExpenseListItem.Row(it) }
-				}
+				.map { ExpenseListItem.Row(it) }
 		}
 	}
 
