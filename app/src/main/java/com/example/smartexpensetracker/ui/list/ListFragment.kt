@@ -13,6 +13,7 @@ import com.example.smartexpensetracker.data.model.Expense
 import com.example.smartexpensetracker.databinding.FragmentListBinding
 import com.example.smartexpensetracker.ui.ViewModelFactory
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class ListFragment : Fragment() {
 	private var _binding: FragmentListBinding? = null
@@ -68,8 +69,12 @@ class ListFragment : Fragment() {
 					listOf(ExpenseListItem.Header(header)) + items.map { ExpenseListItem.Row(it) }
 				}
 		} else {
+			val fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
 			list.sortedBy { it.dateTime }
-				.map { ExpenseListItem.Row(it) }
+				.groupBy { it.dateTime.format(fmt) }
+				.flatMap { (header, items) ->
+					listOf(ExpenseListItem.Header(header)) + items.map { ExpenseListItem.Row(it) }
+				}
 		}
 	}
 
