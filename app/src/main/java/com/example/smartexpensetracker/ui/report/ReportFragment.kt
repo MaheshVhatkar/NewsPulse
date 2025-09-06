@@ -26,10 +26,16 @@ class ReportFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		val daily = viewModel.last7DaysTotals()
-		binding.textDaily.visibility = View.GONE
-		binding.textCategory.visibility = View.GONE
 		binding.chart.visibility = View.VISIBLE
 		binding.chart.setData(daily.map { it.date }, daily.map { it.total })
+
+		val categoryTotals = viewModel.categoryTotalsLast7Days()
+		binding.heading_category.visibility = View.VISIBLE
+		binding.chart_category.visibility = View.VISIBLE
+		binding.chart_category.setDataLabels(
+			labels = categoryTotals.keys.map { it.name },
+			amounts = categoryTotals.values.toList()
+		)
 	}
 
 	override fun onDestroyView() {

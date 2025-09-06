@@ -20,25 +20,23 @@
 			android:visibility="gone"/>
 
 		<TextView
-			android:id="@+id/text_daily"
+			android:id="@+id/heading_category"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:background="#EEEEEE"
-			android:padding="8dp"
-			android:minHeight="120dp"/>
+			android:layout_marginTop="16dp"
+			android:text="Category graph"/>
 
-		<TextView
-			android:id="@+id/text_category"
+		<com.example.smartexpensetracker.ui.report.view.BarChartView
+			android:id="@+id/chart_category"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="#EEEEEE"
-			android:padding="8dp"
-			android:minHeight="120dp"/>
+			android:layout_height="220dp"
+			android:visibility="gone"/>
 
 		<Button
 			android:id="@+id/button_export"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_marginTop="16dp"
 			android:text="Export CSV"/>
 
 	</LinearLayout>

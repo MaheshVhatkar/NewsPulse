@@ -38,18 +38,27 @@ class BarChartView @JvmOverloads constructor(
 	}
 
 	private var dates: List<LocalDate> = emptyList()
+	private var labels: List<String>? = null
 	private var amounts: List<Double> = emptyList()
 	private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM")
 
 	fun setData(dates: List<LocalDate>, amounts: List<Double>) {
 		this.dates = dates
+		this.labels = null
+		this.amounts = amounts
+		invalidate()
+	}
+
+	fun setDataLabels(labels: List<String>, amounts: List<Double>) {
+		this.labels = labels
+		this.dates = emptyList()
 		this.amounts = amounts
 		invalidate()
 	}
 
 	override fun onDraw(canvas: Canvas) {
 		super.onDraw(canvas)
-		if (dates.isEmpty() || amounts.isEmpty()) return
+		if (amounts.isEmpty()) return
 
 		val leftPadding = 70f
 		val rightPadding = 20f
@@ -75,7 +84,8 @@ class BarChartView @JvmOverloads constructor(
 		}
 
 		// Bars
-		val barSpace = width / (amounts.size * 2f)
+		val count = amounts.size
+		val barSpace = if (count > 0) width / (count * 2f) else width
 		amounts.forEachIndexed { index, value ->
 			val left = leftPadding + (index * 2 + 0.5f) * barSpace
 			val right = left + barSpace
@@ -83,8 +93,11 @@ class BarChartView @JvmOverloads constructor(
 			val top = topPadding + height - barHeight
 			canvas.drawRect(left, top, right, topPadding + height, barPaint)
 
-			// X label (date)
-			canvas.drawText(dates[index].format(dateFormatter), (left + right) / 2f, topPadding + height + 30f, labelPaint)
+			// X label (date or category)
+			val label = labels?.getOrNull(index)
+				?: dates.getOrNull(index)?.format(dateFormatter)
+				?: ""
+			canvas.drawText(label, (left + right) / 2f, topPadding + height + 30f, labelPaint)
 		}
 	}
 }
