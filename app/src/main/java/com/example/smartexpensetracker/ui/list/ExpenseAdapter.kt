@@ -8,11 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.smartexpensetracker.data.model.Expense
 import com.example.smartexpensetracker.databinding.ItemExpenseBinding
 import com.example.smartexpensetracker.databinding.ItemHeaderBinding
+import java.time.format.DateTimeFormatter
 
 class ExpenseAdapter : ListAdapter<ExpenseListItem, RecyclerView.ViewHolder>(Diff) {
 	private companion object {
 		const val TYPE_HEADER = 0
 		const val TYPE_ROW = 1
+		val DATE_TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
 	}
 
 	object Diff : DiffUtil.ItemCallback<ExpenseListItem>() {
@@ -52,6 +54,6 @@ class ExpenseAdapter : ListAdapter<ExpenseListItem, RecyclerView.ViewHolder>(Dif
 	private fun bindRow(holder: RowVH, item: Expense) {
 		holder.binding.textTitle.text = item.title
 		holder.binding.textAmount.text = "₹${item.amountInRupees}"
-		holder.binding.textMeta.text = "${item.category} • ${item.dateTime.toLocalTime()}"
+		holder.binding.textMeta.text = "${item.category} • ${item.dateTime.format(DATE_TIME_FORMATTER)}"
 	}
 }
