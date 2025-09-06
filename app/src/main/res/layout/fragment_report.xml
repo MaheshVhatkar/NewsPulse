@@ -11,7 +11,13 @@
 		<TextView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="Last 7 days totals (mock chart below)"/>
+			android:text="Last 7 days totals"/>
+
+		<com.example.smartexpensetracker.ui.report.view.BarChartView
+			android:id="@+id/chart"
+			android:layout_width="match_parent"
+			android:layout_height="220dp"
+			android:visibility="gone"/>
 
 		<TextView
 			android:id="@+id/text_daily"
@@ -20,11 +26,6 @@
 			android:background="#EEEEEE"
 			android:padding="8dp"
 			android:minHeight="120dp"/>
-
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="Category-wise totals (mock chart below)"/>
 
 		<TextView
 			android:id="@+id/text_category"
