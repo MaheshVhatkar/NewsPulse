@@ -29,6 +29,7 @@ import com.example.expensetracker.data.Expense
 import com.example.expensetracker.data.ExpenseCategory
 import com.example.expensetracker.ui.vm.ExpenseViewModel
 import java.time.LocalDate
+import com.example.expensetracker.data.asLocalDateTimeString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,6 +87,6 @@ fun ExpenseListScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(f
 
 @Composable
 private fun ExpenseRow(expense: Expense) {
-	Text("${expense.title} - ₹${"%.2f".format(expense.amountInRupees)} - ${expense.category}")
+	Text("${expense.title} - ₹${"%.2f".format(expense.amountInRupees)} - ${expense.category} - ${expense.epochMillis.asLocalDateTimeString()}")
 }
 
