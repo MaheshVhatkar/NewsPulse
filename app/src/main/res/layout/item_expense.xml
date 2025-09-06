@@ -20,6 +20,14 @@
 		android:text="Category • 10:30"/>
 
 	<TextView
+		android:id="@+id/text_notes"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textColor="#555555"
+		android:visibility="gone"
+		android:text="Notes here"/>
+
+	<TextView
 		android:id="@+id/text_amount"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"

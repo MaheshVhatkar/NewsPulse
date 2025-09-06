@@ -87,6 +87,8 @@ fun ExpenseListScreen(padding: PaddingValues, vm: ExpenseViewModel = viewModel(f
 
 @Composable
 private fun ExpenseRow(expense: Expense) {
-	Text("${expense.title} - ₹${"%.2f".format(expense.amountInRupees)} - ${expense.category} - ${expense.epochMillis.asLocalDateTimeString()}")
+	val base = "${expense.title} - ₹${"%.2f".format(expense.amountInRupees)} - ${expense.category} - ${expense.epochMillis.asLocalDateTimeString()}"
+	val notes = expense.notes?.trim().orEmpty()
+	Text(if (notes.isNotEmpty()) "$base\nNotes: $notes" else base)
 }
 

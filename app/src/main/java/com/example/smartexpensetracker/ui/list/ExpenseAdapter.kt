@@ -1,6 +1,7 @@
 package com.example.smartexpensetracker.ui.list
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -55,5 +56,12 @@ class ExpenseAdapter : ListAdapter<ExpenseListItem, RecyclerView.ViewHolder>(Dif
 		holder.binding.textTitle.text = item.title
 		holder.binding.textAmount.text = "₹${item.amountInRupees}"
 		holder.binding.textMeta.text = "${item.category} • ${item.dateTime.format(DATE_TIME_FORMATTER)}"
+		val note = item.notes?.trim().orEmpty()
+		if (note.isNotEmpty()) {
+			holder.binding.textNotes.visibility = View.VISIBLE
+			holder.binding.textNotes.text = note
+		} else {
+			holder.binding.textNotes.visibility = View.GONE
+		}
 	}
 }
